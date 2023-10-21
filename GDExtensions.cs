@@ -16,7 +16,6 @@ public static class GDExtensions
 	public static SKColor ToSKColor(this Color color) => new(color.ToRgba32());
 	public static Color ToGDColor(this SKColor color) => new((uint)color);
 
-
     // Image
     public static Image ToGDImage(this SKPicture picture, SKSizeI dimensions)
     {
@@ -44,6 +43,7 @@ public static class GDExtensions
         return skiaImage.ToGDImage();
     }
 
+    // TODO:
     //public static SKBitmap ToSKBitmap(this Image gdImage)
     //{
     //}
