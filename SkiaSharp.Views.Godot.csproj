@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Godot.SourceGenerators" Version="4.2.0-dev.6" />
+    <PackageReference Include="GodotSharp" Version="4.2.0-dev.6" />
+    <PackageReference Include="SkiaSharp.Views.Desktop.Common" Version="2.88.6" />
+  </ItemGroup>
+
+</Project>
