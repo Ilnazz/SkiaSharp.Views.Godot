@@ -13,8 +13,8 @@ public static class GDExtensions
 	public static Rect2 ToGDRect(this SKRect rect) => new(rect.Left, rect.Top, rect.Width, rect.Height);
 
 	// Color
-	public static SKColor ToSKColor(this Color color) => new(color.ToRgba32());
-	public static Color ToGDColor(this SKColor color) => new((uint)color);
+	public static SKColor ToSKColor(this Color color) => new((byte)color.R8, (byte)color.G8, (byte)color.B8, (byte)color.A8);
+	public static Color ToGDColor(this SKColor color) => Color.Color8(color.Red, color.Green, color.Blue, color.Alpha);
 
     // Image
     public static Image ToGDImage(this SKPicture picture, SKSizeI dimensions)
