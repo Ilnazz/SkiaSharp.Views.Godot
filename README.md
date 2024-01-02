@@ -1,1 +1,1 @@
-The SkiaSharp library view for Godot game engine, that allows you to use power of SkiaSharp in Godot.
+The SkiaSharp library view for the Godot game engine, that allows you to use the power of SkiaSharp in Godot.
