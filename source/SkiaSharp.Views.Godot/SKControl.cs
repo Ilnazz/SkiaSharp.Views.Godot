@@ -1,45 +1,50 @@
 ﻿using Godot;
-
 using SkiaSharp.Views.Desktop;
-using System.Runtime.InteropServices;
 
 namespace SkiaSharp.Views.Godot;
 
 public partial class SKControl : Control
 {
+    public SKSizeI CanvasSize => _bitmap is not null ? _imageInfo.Size : SKSizeI.Empty;
+
 	public event EventHandler<SKPaintSurfaceEventArgs>? PaintSurface;
 
-    private SKImageInfo? _imageInfo;
-    private byte[]? _imageData;
-    private GCHandle? _imageDataHandle;
+    #region Fields
+    private SKImageInfo _imageInfo;
+    
+    private SKBitmap? _bitmap;
     private SKSurface? _surface;
+    
     private ImageTexture? _imageTexture;
+    #endregion
+
+    public SKControl() => TreeExiting += OnTreeExiting;
 
     public override void _Draw()
     {
         int width = (int)Size.X,
             height = (int)Size.Y;
 
-        if (Visible == false || width == 0 || height == 0)
+        if (!Visible || width is 0 || height is 0)
             return;
 
-        if (_imageInfo is null || _imageInfo.Value.Width != width || _imageInfo.Value.Height != height)
+        if (_imageInfo.Width != width || _imageInfo.Height != height)
         {
-            _imageInfo = new SKImageInfo(width, height, SKColorType.Rgba8888, SKAlphaType.Unpremul);
+            // It would be good if the color type was set by default for the current platform,
+            // but the Godot's Image.Format does not support all color types of SKColorType.
+            _imageInfo = new SKImageInfo(width, height, SKColorType.Rgba8888);
 
+            _bitmap?.Dispose();
             _surface?.Dispose();
-            _imageDataHandle?.Free();
 
-            _imageData = new byte[_imageInfo.Value.BytesSize];
-            _imageDataHandle = GCHandle.Alloc(_imageData, GCHandleType.Pinned);
-            _surface = SKSurface.Create(_imageInfo.Value, _imageDataHandle.Value.AddrOfPinnedObject(), _imageInfo.Value.RowBytes);
+            _bitmap = new SKBitmap(_imageInfo);
+            _surface = SKSurface.Create(_imageInfo, _bitmap.GetPixels());
         }
 
-        //_surface!.Canvas.Clear();
-        OnPaintSurface(new SKPaintSurfaceEventArgs(_surface, _imageInfo.Value));
+        OnPaintSurface(new SKPaintSurfaceEventArgs(_surface, _imageInfo));
         _surface!.Canvas.Flush();
 
-        var image = Image.CreateFromData(width, height, false, Image.Format.Rgba8, _imageData);
+        var image = Image.CreateFromData(width, height, false, Image.Format.Rgba8, _bitmap!.Bytes);
 
         if (_imageTexture is null)
             _imageTexture = ImageTexture.CreateFromImage(image);
@@ -50,13 +55,13 @@ public partial class SKControl : Control
 
         DrawTextureRect(_imageTexture, new Rect2(0, 0, width, height), false);
     }
+    
+    protected virtual void OnPaintSurface(SKPaintSurfaceEventArgs e) => PaintSurface?.Invoke(this, e);
 
-    public override void _ExitTree()
+    private void OnTreeExiting()
     {
-        _imageDataHandle?.Free();
+        _bitmap?.Dispose();
         _surface?.Dispose();
         _imageTexture?.Dispose();
     }
-
-    protected virtual void OnPaintSurface(SKPaintSurfaceEventArgs e) => PaintSurface?.Invoke(this, e);
 }
