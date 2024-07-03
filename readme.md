@@ -14,7 +14,3 @@ You can run the sample project using Godot Editor or running Godot executable fi
 * Test working on Android, iOS, MacOS (now it tested on Windows and Linux);
 * Test on devices with different DPI's;
 * Make pull request to SkiaSharp repository after tasks completion.
-
-## License
-
-This project is licensed under the [MIT license](license).
